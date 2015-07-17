@@ -1,3 +1,18 @@
+Folders
+css
+html
+images
+
+# Web Files
+*.html
+*.css
+
+# Outdated Files
+gameScript.js
+
+# Uneccessary Files
+gameSession
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
