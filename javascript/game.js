@@ -1,38 +1,37 @@
-var player;
+var Player;
+var Level1;
 var key = {};
 var levels = [];
-
-var _Player = function(){
-	this.groundState = 'freefall';
-	this.paused = false;
-	this.up = new Vector2( 0, 10, 1/game.FPS );
-	this.left = new Vector2( -5, 0, 0.1 );
-	this.right = new Vector2( 5, 0, 0.1 );
-	this.down = new Vector2( 0, 0, 1/game.FPS );
+/**
+var _Player = {
+	groundState : 'freefall',
+	up : new Vector2( 0, 10, 1/Game.FPS ),
+	left : new Vector2( -5, 0, 0.1 ),
+	right : new Vector2( 5, 0, 0.1 ),
+	down : new Vector2( 0, 0, 1/Game.FPS ),
 	
-	this.addComponent = function( object ){
+	addComponent : function( object ){
 		if ( object.typeof( RigidBody ) ){
-			this.rigidbody = object;
+			rigidbody = object;
 		} else if ( object.typeof ( Force2 ) ){
-			this.rigidbody.addForce( object );
+			rigidbody.addForce( object );
 		}
-	}
+	},
 	
-	this.jump = function(){
-		this.rigidbody.addForce( new Vector2( 0, 20 ) )
-	}
+	jump : function(){
+		rigidbody.addForce( new Vector2( 0, 20 ) )
+	},
 	
-	this.move = function( direction ){
-		this.rigidbody.addForce( direction );
-	}
+	move : function( direction ){
+		rigidbody.addForce( direction );
+	},
 	
-	this.draw = function(){
+	draw : function(){
 		
 	}
 	
-	
-	
 }
+**/
 
 //Level Design
 
@@ -43,38 +42,34 @@ var _Player = function(){
 	getAll(), return a 'copy' of the level for Game to use
 functions
 and
-	gameObjects[], to hold all objects within the gameObjects
+	GameObjects[], to hold all objects within the GameObjects
 	gravity vector, [optional-ish]
-	player, to play the game obviously
+	player, to play the Game obviously
 
 */
 
-var Player = function(){
-	this.position = new Point2(
-		game.dimensions.x / 2,
-		game.dimensions.y / 2
-	);
-	this.mass = new Mass( 1 );
-	this.rigidbody = new RigidBody( this.mass, this.position );
-	this.up = new Vector2( 0, 10, 1 / game.FPS );
-	this.left = new Vector2( -5, 0, 0.1 );
-	this.right = new Vector2( 5, 0, 0.1 );
-	this.down = new Vector2( 0, 0, 1 / game.FPS );
-	
-	this.resetPosition = function(){
+function setup(){
+	Player = {};
+	Player.body = [];
+	Player.position = new Point2(Game.dimensions.x / 2, Game.dimensions.y / 2);
+	Player.mass = 1;
+	Player.rigidbody = new RigidBody( Player.mass , Player.position );
+	Player.up = new Vector2( 0, 10, 1 / Game.FPS );
+	Player.left = new Vector2( -5, 0, 0.1 );
+	Player.right = new Vector2( 5, 0, 0.1 );
+	Player.down = new Vector2( 0, 0, 1 / Game.FPS );
+	Player.resetPosition = function(){
 		this.position = new Point2(
-			game.dimensions.x / 2,
-			game.dimensions.y / 2
+			Game.dimensions.x / 2,
+			Game.dimensions.y / 2
 		);
-	}
-	
-	this.init = function(){
-		this.body = [];
-		var lorem = new Rectangle();
-		var head = new Rectangle(
+	};
+	Player.init = function(){
+		position = new Point2(Player.position.x, Player.position.y);
+		head = new Rectangle(
 			new Point2(
-				this.position.x - 3,
-				this.position.y + 10
+				position.x - 3,
+				position.y + 10
 			),
 			new Point2(
 				20,
@@ -82,21 +77,21 @@ var Player = function(){
 			),
 			"#FFCCBB"
 		);
-		var torso = new Rectangle(
+		torso = new Rectangle(
 			new Point2(
-				this.position.x - 10,
-				this.position.y + 30
+				position.x - 10,
+				position.y + 30
 			),
 			new Point2(
 				35,
 				60
 			),
 			"#FFBB66"
-		);
-		var pantBase = new Rectangle(
+		),
+		pantBase = new Rectangle(
 			new Point2(
-				this.position.x - 10,
-				this.position.y + 90
+				position.x - 10,
+				position.y + 90
 			),
 			new Point2(
 				35,
@@ -104,10 +99,10 @@ var Player = function(){
 			),
 			"#0099BB"
 		);
-		var pantLegs = new Rectangle(
+		pantLegs = new Rectangle(
 			new Point2(
-				this.position.x - 3,
-				this.position.y + 100
+				position.x - 3,
+				position.y + 100
 			),
 			new Point2(
 				20,
@@ -115,10 +110,10 @@ var Player = function(){
 			),
 			"#0099BB"
 		);
-		var shoeL = new Rectangle(
+		shoeL = new Rectangle(
 			new Point2(
-				this.position.x - 4,
-				this.position.y + 150
+				position.x - 4,
+				position.y + 150
 			),
 			new Point2(
 				15,
@@ -126,10 +121,10 @@ var Player = function(){
 			),
 			"#FFBB66"
 		);
-		var shoeR = new Rectangle(
+		shoeR = new Rectangle(
 			new Point2(
-				this.position.x + 10,
-				this.position.y + 150
+				position.x + 10,
+				position.y + 150
 			),
 			new Point2(
 				15,
@@ -137,119 +132,108 @@ var Player = function(){
 			),
 			"#FFBB66"
 		);
-		this.body.push( head     );
-		this.body.push( torso    );
-		this.body.push( pantBase );
-		this.body.push( pantLegs );
-		this.body.push( shoeL    );
-		this.body.push( shoeR    );
-	}
-	
-	this.jump = function(){
-		this.rigidbody.addForce( this.up )
-	}
-	
-	this.move = function( direction ){
-		this.rigidbody.addForce( direction );
-	}
-	
-	this.userInput = function(){
+		Player.body.push( head     );
+		Player.body.push( torso    );
+		Player.body.push( pantBase );
+		Player.body.push( pantLegs );
+		Player.body.push( shoeL    );
+		Player.body.push( shoeR    );
+	};
+	Player.jump = function(){
+		Player.rigidbody.addImpulseForce( Player.up )
+	};
+	Player.move = function( direction ){
+		Player.rigidbody.addImpulseForce( direction );
+	};
+	Player.userInput = function(){
 		//Handle the users input here
-		if (game.paused == false) {
+		if (Game.paused == false) {
 			if (key[87]){
 				//W Key
 				//If on platform
-				if (this.groundState == 'grounded') {
-					this.jump();
+				if (Player.groundState == 'grounded') {
+					Player.jump();
 				}
 			}
 			
 			if (key[65]){
 				//A Key
-				this.move( this.left );
+				Player.move( Player.left );
 			}
 			
 			if (key[83]){ 
 				//S Key
-				this.move( this.down );
+				Player.move( Player.down );
 			}
 			
 			if (key[68]){
 				//D Key
-				this.move( this.right );
+				Player.move( Player.right );
 			}
 		/*
 			if (key[32]){
 				//Spacebar
-				if (this.jetPack.has == true){
-					this.rigidbody.addForce( new Vector2( 0, this.jetpack.force ) );
+				if (jetPack.has == true){
+					rigidbody.addForce( new Vector2( 0, jetpack.force ) );
 				}
 			}
 		*/
 		}
-	}
-	
-	this.update = function(){
-		console.log( "update called" );
-		this.userInput();
-		this.rigidbody.update();
-		this.draw();
-	}
-	
-	this.draw = function(){
-		for( var x = 0; x < this.body.length; x++ ){
-			this.body[ x ].draw();
+	};
+	Player.update = function(){
+		Player.userInput();
+		Player.rigidbody.update();
+	};
+	Player.draw = function(){
+		for( var x = 0; x < Player.body.length; x++ ){
+			Player.body[ x ].draw();
 		}
-	}
-	
-	this.init();
-}
+	};
 
-var Level1 = function( title ){
-	
-	this.title = title;
-	this.gameObjects = []
-	this.gravity = -9.81;
-	
-	this.setupEnvironment = function(){
+	Level1 = {};
+	Level1.title = "null";
+	Level1.GameObjects = [];
+	Level1.gravity = -9.81;
+	Level1.setTitle = function(t){
+		title = t;
+	};
+	Level1.setupEnvironment = function(){
 		return true;
-	}
-	
-	this.setupPickups = function(){
+	};
+	Level1.setupPickups = function(){
 		return true;
-	}
-	
-	this.setupPlayer = function(){
-		player.resetPosition();
-	}
-	
-	this.addGameObject = function( object ){
-		gameObjects.push( object );
-	}
-	
-	this.update = function(){
-		player.update();
-		for( object in this.gameObjects ){
-			object.update();
-		}
-		this.draw();
-	}
-
-	this.draw = function(){
-		if ( game.paused == false ){
-			requestAnimationFrame( this.update );
+	};
+	Level1.setupPlayer = function(){
+		Player.resetPosition();
+	};
+	Level1.addGameObject = function( object ){
+		Level.GameObjects.push( object );
+	};
+	Level1.draw = function(){
+		if ( Game.paused == false ){
+			Player.draw();
+			for( object in Level1.GameObjects ){
+				object.draw();
+			}
+			requestAnimationFrame( Level1.update );
 		} else {
 			//requestAnimationFrame( pauseScreen );
 		}
-	}
-	
-	this.start = function(){
+	};
+	Level1.update = function(){
+		Player.update();
+		for( object in Level1.GameObjects ){
+			object.update();
+		}
+		Level1.draw();
+	};
+	Level1.start = function(){
 		//setup the level here
-		this.setupEnvironment();
-		this.setupPickups();
-		this.setupPlayer();
-		this.update();
-	}
+		Level1.setupEnvironment();
+		Level1.setupPickups();
+		Level1.setupPlayer();
+		Level1.update();
+	};
 }
 
 //Input Event Handling System
@@ -266,9 +250,16 @@ document.addEventListener("keyup", function(evt) {
     key[evt.keyCode] = false;
 });
 
-var construct = function(){
-	//Add levels
-	//persistent player object
-	player = new Player();
-	game.addLevel( new Level1('Level 1') );
+function start(){
+	if(Game.ready == true){
+		setup();
+		Player.init();
+		Level1.setTitle("Level 1");
+		Game.addLevel( Level1 );
+		Game.start();
+	}else{
+		requestAnimationFrame(start);
+	}
 }
+
+start();
